@@ -8,6 +8,9 @@ set(SOURCES
     Providers.cpp
     FuzzyMatch.cpp
     main.cpp
+    Lexer.cpp
+    Token.cpp
+    Parser.cpp
     )
 
 serenity_app(Assistant ICON app-run)
