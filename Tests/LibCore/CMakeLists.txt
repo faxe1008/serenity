@@ -3,6 +3,7 @@ set(TEST_SOURCES
     TestLibCoreFileWatcher.cpp
     TestLibCoreIODevice.cpp
     TestLibCoreDeferredInvoke.cpp
+    TestLibCoreChronExpression.cpp
 )
 
 foreach(source IN LISTS TEST_SOURCES)

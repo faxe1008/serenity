@@ -4,6 +4,7 @@ set(SOURCES
     ArgsParser.cpp
     ConfigFile.cpp
     Command.cpp
+    ChronExpression.cpp
     DateTime.cpp
     DirIterator.cpp
     ElapsedTimer.cpp
