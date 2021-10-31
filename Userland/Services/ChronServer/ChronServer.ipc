@@ -1,0 +1,8 @@
+
+endpoint ChronServer
+{
+    pledge_euid(uid_t euid) => ()
+    schedule_chron_task(String task_name, String chron_expression, String task) => (bool response)
+    reschedule_chron_task(String task_name, String chron_expression) => (bool response)
+    delete_chron_task(String task_name) =|
+}
