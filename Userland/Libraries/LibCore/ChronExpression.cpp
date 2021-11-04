@@ -48,7 +48,7 @@ Optional<ChronExpression> ChronExpression::from_string(const StringView& str)
 
 Optional<Core::DateTime> ChronExpression::next_tick(const Core::DateTime& time) const
 {
-    auto next = Core::DateTime::from_timestamp(time.timestamp() + 60);
+    auto next = Core::DateTime::from_timestamp(time.timestamp() + 60 - time.second());
 
     for (;;) {
         if (next.year() - time.year() > 4)

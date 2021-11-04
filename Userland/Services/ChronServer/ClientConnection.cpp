@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
+#include <AK/Format.h>
+#include <ChronServer/ChronTask.h>
+#include <ChronServer/ChronTaskIdentifier.h>
 #include <ChronServer/ClientConnection.h>
-#include <spawn.h>
-
 namespace ChronServer {
 
 static HashMap<int, RefPtr<ClientConnection>> s_connections;
@@ -15,10 +16,10 @@ static HashMap<ChronTaskIdentifier, ChronTask> s_tasks;
 void check_and_execute_tasks()
 {
     auto now = Core::DateTime::now();
-    for (const auto& [task_identifier, task] : s_tasks) {
+    for (auto& [task_identifier, task] : s_tasks) {
         if (task.has_expired(now)) {
-            dbgln("ChronServer: Executing task {} for {}", task_identifier.task_name(), task_identifier.client_user_id());
-            if (task.execute()) {
+            dbgln("ChronServer: {} Executing task {} for {}", now.to_string(), task_identifier.task_name(), task_identifier.client_user_id());
+            if (task.execute(now)) {
                 for (auto& connection : s_connections) {
                     if (connection.value->client_user_id() == task_identifier.client_user_id()) {
                         connection.value->async_task_started(task_identifier.task_name());
@@ -27,30 +28,6 @@ void check_and_execute_tasks()
             }
         }
     }
-}
-
-bool ChronTask::has_expired(const Core::DateTime& time) const
-{
-    return m_next_expiration.has_value() && m_next_expiration.value() < time;
-}
-
-bool ChronTask::execute() const
-{
-    if (m_executable_components.size() == 0)
-        return false;
-
-    Vector<const char*> parts;
-    for (const auto& part : m_executable_components)
-        parts.append(part.characters());
-
-    parts.append(nullptr);
-    auto argv = parts.data();
-    pid_t pid;
-    if ((errno = posix_spawnp(&pid, argv[0], nullptr, nullptr, const_cast<char**>(argv), environ))) {
-        perror("posix_spawn");
-        return false;
-    }
-    return true;
 }
 
 ClientConnection::ClientConnection(NonnullRefPtr<Core::LocalSocket> client_socket, int client_id)
@@ -108,6 +85,7 @@ Messages::ChronServer::RescheduleChronTaskResponse ClientConnection::reschedule_
     if (!task.has_value())
         return false;
 
+    dbgln("ChronServer: rescheduling {} to {}", task_name, chron_expression);
     task->reschedule(chron_exp_result.value());
     return true;
 }
@@ -118,6 +96,7 @@ void ClientConnection::delete_chron_task(String const& task_name)
         did_misbehave("ChronServer: Need to pledge euid first");
         return;
     }
+    dbgln("ChronServer: removing task {}", task_name);
     s_tasks.remove({ m_client_euid.value(), task_name });
 }
 

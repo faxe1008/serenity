@@ -9,6 +9,8 @@ compile_ipc(ChronClient.ipc ChronClientEndpoint.h)
 
 set(SOURCES
     ClientConnection.cpp
+    ChronTask.cpp
+    ChronTaskIdentifier.h
     main.cpp
     ChronServerEndpoint.h
     ChronClientEndpoint.h
