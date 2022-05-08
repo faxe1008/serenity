@@ -5,6 +5,7 @@
  */
 
 #include "EditPasswordDialog.h"
+#include "PasswordGenerator.h"
 #include <Applications/PasswordManager/EditPasswordDialogGML.h>
 #include <LibGUI/Widget.h>
 
@@ -37,6 +38,13 @@ EditPasswordDialog::EditPasswordDialog(NonnullRefPtr<PasswordDatabaseModel> data
 
     m_save_button = *main_widget.find_descendant_of_type_named<GUI::Button>("save_button");
     m_cancel_button = *main_widget.find_descendant_of_type_named<GUI::Button>("cancel_button");
+
+    m_generate_password_button->on_click = [this](auto) {
+        auto password = PasswordGenerator::generate(16);
+        m_edited_entry.password = password;
+        m_password_textbox->set_text(m_edited_entry.password);
+        m_repeat_password_textbox->set_text(m_edited_entry.password);
+    };
 
     m_cancel_button->on_click = [this](auto) {
         done(ExecResult::ExecOK);

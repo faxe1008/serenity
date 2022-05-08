@@ -5,6 +5,7 @@
  */
 
 #include "PasswordDatabaseModel.h"
+#include "PasswordGenerator.h"
 #include <AK/JsonArray.h>
 #include <AK/JsonObject.h>
 #include <AK/JsonParser.h>
@@ -69,7 +70,8 @@ ErrorOr<void> PasswordDatabaseModel::append_empty_entry()
     if (next_id < 0) {
         return Error::from_string_literal("No more entry ids available");
     }
-    PasswordEntry new_entry { next_id, "", "", "", "", Core::DateTime::now() };
+    auto password = PasswordGenerator::generate(16);
+    PasswordEntry new_entry { next_id, "", "", password, "", Core::DateTime::now() };
     m_entries.append(std::move(new_entry));
     did_update();
     return {};

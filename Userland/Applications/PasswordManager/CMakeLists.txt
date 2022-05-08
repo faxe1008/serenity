@@ -14,6 +14,7 @@ set(SOURCES
     PasswordManagerWindowGML.h
     EditPasswordDialog.cpp
     EditPasswordDialogGML.h
+    PasswordGenerator.cpp
 )
 
 serenity_app(PasswordManager ICON app-passwordmanager)
